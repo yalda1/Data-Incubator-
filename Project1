@@ -1,0 +1,5 @@
+# load csv file from the desktop
+import pandas as pd
+df = pd.read_csv('C:/--- SADEGH ---/(3) PROGRAMMING/Python/My Practice/Telecom Customer Project/Telecom_customer churn.csv')
+# identify shape of the dataset (rows, columns)
+print('shape of the dataset df:', df.shape)   
