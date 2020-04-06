@@ -1,1 +1,41 @@
+# a sample clustering based on two features
+from sklearn.cluster import KMeans
 
+features = new_df[['change_mou', 'change_rev']]
+print(features)
+
+kmeans = KMeans(3)
+kmeans.fit(features)
+
+data_with_clusters = new_df.copy()
+data_with_clusters['Cluster'] = kmeans.fit_predict(features)
+
+plt.scatter(data_with_clusters['change_mou'], data_with_clusters['change_rev'], 
+            c = data_with_clusters['Cluster'], cmap = 'rainbow')
+plt.xlim(-4000, 4000)
+plt.ylim(-1000, 1000)
+plt.show()
+
+# a sample neural network based on numeric values
+
+# split data into train and test (80% train, 20% test) and then into train and validation (90% train, 10% validation):
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(numeric_df, new_df['churn'], test_size = 0.2, random_state = 2018)
+x_train, x_validation, y_train, y_validation = train_test_split(x_train, y_train, test_size = 0.1, random_state = 2018)
+
+# fit a neural network:
+from keras.models import Sequential
+from keras.layers import Dense
+
+model = Sequential()
+model.add(Dense(256, input_dim = x_train.shape[1], activation = 'relu'))   # one hidden layer with 256 neurons 
+model.add(Dense(1, activation = 'sigmoid'))   # output layer with sigmoid activation for binary classification
+
+model.compile(loss = 'binary_crossentropy', optimizer = 'adam', metrics = ['accuracy'])   # configure the model
+          
+model.fit(x_train, y_train, batch_size = 64, epochs = 3, validation_data = (x_validation, y_validation))  # train the model
+
+# testing the network:
+result = model.evaluate(x_test, y_test)
+for i in range(len(model.metrics_names)):
+    print('metric', model.metrics_names[i], ':', str(round(result[i], 2)))
