@@ -1,5 +1,85 @@
 # load csv file from the desktop
 import pandas as pd
 df = pd.read_csv('C:/--- SADEGH ---/(3) PROGRAMMING/Python/My Practice/Telecom Customer Project/Telecom_customer churn.csv')
+
 # identify shape of the dataset (rows, columns)
 print('shape of the dataset df:', df.shape)   
+pd.options.display.max_rows = 999
+pd.options.display.max_columns = 999
+
+# view the first 5 rows of the dataset
+print(df.head(5))
+pd.options.display.max_rows = 999
+pd.options.display.max_columns = 999
+
+# view the first 5 rows of the dataset
+print(df.head(5))
+# calculate the percentage of missing values in each column of the dataframe:
+print(df.isnull().sum() / df.shape[0] * 100)
+
+# calculate the number of missing vlues in the overall dataframe
+print('total number of missing values in this dataset:', df.isnull().sum().sum())
+
+# identify columns with more than 10 percent missing values
+columns_to_remove = df.columns[df.isnull().sum() / df.shape[0] * 100 > 10]
+print(columns_to_remove)
+
+# remove the identified columns
+new_df = df[list(set(df.columns) - set(columns_to_remove))]
+
+# identify shape of the new dataset (rows, columns)
+print('shape of the dataset df:', new_df.shape)  
+
+# replace missing values (nulls) in columns with the modes
+for column in new_df.columns:
+    new_df[column] = new_df[column].fillna(df[column].mode()[0])
+
+# check if there is still nulls in the dataset
+print('total number of missing values in the new dataset:', new_df.isnull().sum().sum())
+
+# identify data types in the dataset:
+print(new_df.dtypes)
+
+# identify unique data types in the dataframe
+print('distinct data types:', list(new_df.dtypes.unique()))
+
+# calculate summary statistics for numeric variables
+numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+numeric_df = new_df.select_dtypes(include = numerics)
+
+print('mean values:')
+print(numeric_df.mean())
+print('-----------')
+
+print('median values:')
+print(numeric_df.median())
+print('-----------')
+
+print('standard deviations:')
+print(numeric_df.std())
+print('-----------')
+
+# establish correlation matrix
+numeric_df.corr()
+
+# plot a histogram for Average monthly revenue over the previous three and six months
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+plt.hist(new_df['avg3rev'], bins = 200, label = 'avg3rev')
+plt.hist(new_df['avg6rev'], bins = 200, label = 'avg6rev')
+plt.xlim(0, 400)
+plt.legend(loc = 'upper right')
+plt.show
+
+# plot a sample scatter plot
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+
+plt.scatter(new_df['ovrrev_Mean'], new_df['ovrmou_Mean'])
+plt.xlim(0, 800)
+plt.ylim(0, 2000)
+plt.xlabel('Mean overage revenue')
+plt.ylabel('Mean overage minutes of use')
+plt.show()
